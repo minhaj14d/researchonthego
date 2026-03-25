@@ -54,3 +54,11 @@
 | 2026-03-28 00:02 | experiments/niche1/plots/ (5 new) | model_comparison_bars, accuracy_vs_stability, radar, native_vs_shap, heatmap |
 | 2026-03-28 00:03 | research-notes/daily-log/2026-03-28.md | Day 4 experiment log: EXP-007, EXP-008 |
 | 2026-03-28 00:03 | research-notes/niches/niche-1-explanation-stability.md | Updated task checklist with Day 4 completions |
+| 2026-03-29 00:00 | experiments/niche1/run_day5.py | Final analysis: Pareto frontier, summary tables, statistics |
+| 2026-03-29 00:01 | experiments/niche1/results/table1_summary.csv | Publication Table 1: all models × datasets × metrics |
+| 2026-03-29 00:01 | experiments/niche1/results/table2_perturbation.csv | Publication Table 2: ρ by perturbation type |
+| 2026-03-29 00:01 | experiments/niche1/plots/pareto_frontier.png | Formal Pareto frontier (3 panels) |
+| 2026-03-29 00:01 | experiments/niche1/plots/final_summary_panel.png | 3×3 summary panel (datasets × metrics) |
+| 2026-03-29 00:02 | research-notes/drafts/paper-outline.md | Full paper draft: 6 sections, ~3500 words, 10 references |
+| 2026-03-29 00:03 | research-notes/daily-log/2026-03-29.md | Day 5 experiment log: EXP-009, EXP-010, final summary |
+| 2026-03-29 00:03 | research-notes/niches/niche-1-explanation-stability.md | All tasks marked complete |

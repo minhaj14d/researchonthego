@@ -1,0 +1,13 @@
+Dataset,Model,Accuracy,AUC-ROC,Fidelity (clean),ρ (label flip),J@3 (label flip),Fidelity (label flip)
+Breast Cancer,Decision Tree,0.923,0.961,0.977,0.341 ± 0.197,0.380,0.962
+Breast Cancer,EBM,0.970,0.995,0.945,0.608 ± 0.163,0.260,0.597
+Breast Cancer,Logistic Reg.,0.981,0.997,0.936,0.281 ± 0.144,0.187,0.559
+Breast Cancer,XGBoost,0.963,0.993,0.949,0.472 ± 0.138,0.360,0.804
+Pima Diabetes,Decision Tree,0.752,0.774,0.895,0.792 ± 0.139,0.733,0.889
+Pima Diabetes,EBM,0.747,0.825,0.168,0.919 ± 0.059,0.800,-0.171
+Pima Diabetes,Logistic Reg.,0.749,0.826,0.183,0.906 ± 0.080,0.833,-0.203
+Pima Diabetes,XGBoost,0.743,0.805,0.556,0.919 ± 0.045,0.833,0.365
+Heart Disease,Decision Tree,0.767,0.856,0.929,0.656 ± 0.253,0.587,0.930
+Heart Disease,EBM,0.843,0.908,0.595,0.798 ± 0.155,0.680,0.284
+Heart Disease,Logistic Reg.,0.837,0.906,0.632,0.745 ± 0.130,0.633,0.304
+Heart Disease,XGBoost,0.787,0.882,0.737,0.817 ± 0.079,0.647,0.580

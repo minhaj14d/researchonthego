@@ -1,0 +1,13 @@
+dataset,model,Gaussian Noise,Feature Dropout,Label Flip
+breast_cancer,decision_tree,1.000 ± 0.000,0.999 ± 0.002,0.341 ± 0.197
+breast_cancer,ebm,0.997 ± 0.002,0.995 ± 0.004,0.608 ± 0.163
+breast_cancer,logistic_regression,0.999 ± 0.001,0.993 ± 0.006,0.281 ± 0.144
+breast_cancer,xgboost,0.999 ± 0.001,0.996 ± 0.002,0.472 ± 0.138
+diabetes,decision_tree,0.995 ± 0.010,0.995 ± 0.010,0.792 ± 0.139
+diabetes,ebm,0.997 ± 0.008,0.995 ± 0.010,0.919 ± 0.059
+diabetes,logistic_regression,1.000 ± 0.000,0.998 ± 0.006,0.906 ± 0.080
+diabetes,xgboost,0.981 ± 0.029,0.976 ± 0.028,0.919 ± 0.045
+heart,decision_tree,0.999 ± 0.002,0.988 ± 0.008,0.656 ± 0.253
+heart,ebm,0.996 ± 0.006,0.992 ± 0.006,0.798 ± 0.155
+heart,logistic_regression,0.996 ± 0.006,0.992 ± 0.005,0.745 ± 0.130
+heart,xgboost,0.956 ± 0.037,0.991 ± 0.008,0.817 ± 0.079
