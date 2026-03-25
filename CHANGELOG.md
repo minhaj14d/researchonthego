@@ -62,3 +62,6 @@
 | 2026-03-29 00:02 | research-notes/drafts/paper-outline.md | Full paper draft: 6 sections, ~3500 words, 10 references |
 | 2026-03-29 00:03 | research-notes/daily-log/2026-03-29.md | Day 5 experiment log: EXP-009, EXP-010, final summary |
 | 2026-03-29 00:03 | research-notes/niches/niche-1-explanation-stability.md | All tasks marked complete |
+| 2026-03-25 12:00 | latex/main.tex | Overleaf-ready LaTeX paper: 6 sections, 18 figures, 5 tables, appendix |
+| 2026-03-25 12:00 | latex/references.bib | BibTeX bibliography with 16 entries |
+| 2026-03-25 12:00 | latex/figures/*.png | Copied all 18 publication plots into LaTeX figures directory |
