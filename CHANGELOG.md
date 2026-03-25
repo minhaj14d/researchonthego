@@ -35,3 +35,13 @@
 | 2026-03-26 00:01 | experiments/niche1/results/model_lipschitz.csv | 90 model-space Lipschitz records (auto-generated) |
 | 2026-03-26 00:02 | experiments/niche1/plots/ (7 files) | All publication-quality plots generated |
 | 2026-03-26 00:03 | research-notes/daily-log/2026-03-26.md | Day 2 experiment log: EXP-003, EXP-004 |
+| 2026-03-27 00:00 | experiments/niche1/faithfulness.py | Surrogate fidelity + perturbation faithfulness analysis |
+| 2026-03-27 00:00 | experiments/niche1/statistical_tests.py | Wilcoxon, Mann-Whitney, Cohen's d, Bootstrap CIs |
+| 2026-03-27 00:00 | experiments/niche1/visualize_day3.py | 4 Day 3 plots: faithfulness, forest, CI, ratio |
+| 2026-03-27 00:01 | experiments/niche1/results/faithfulness_results.csv | 300 faithfulness records (auto-generated) |
+| 2026-03-27 00:01 | experiments/niche1/results/statistical_tests.csv | 51 significance test records (auto-generated) |
+| 2026-03-27 00:01 | experiments/niche1/results/confidence_intervals.csv | 216 bootstrap CI records (auto-generated) |
+| 2026-03-27 00:02 | experiments/niche1/plots/ (4 new) | faithfulness_degradation, faithfulness_ratio, significance_forest, confidence_intervals |
+| 2026-03-27 00:03 | research-notes/methods/metrics.md | Added metrics 5–7, statistical testing section |
+| 2026-03-27 00:03 | research-notes/niches/niche-1-explanation-stability.md | Updated task checklist with Day 3 completions |
+| 2026-03-27 00:04 | research-notes/daily-log/2026-03-27.md | Day 3 experiment log: EXP-005, EXP-006 |

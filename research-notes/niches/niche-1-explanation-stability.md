@@ -45,9 +45,13 @@ Where `||·||` is the L2 norm. A lower Lipschitz ratio = more stable explanation
 - [x] Compute baseline SHAP values
 - [x] Run perturbation experiments (3 types × 3 levels × 5 seeds = 300 experiments)
 - [x] Compute stability metrics (Spearman ρ, Lipschitz ratio, Top-k Jaccard)
+- [x] Per-feature stability analysis (Day 2) — most unstable features = most important
+- [x] Model-space Lipschitz for label-flip (Day 2) — XGBoost 10–20x more sensitive than LogReg
+- [x] Surrogate fidelity + perturbation faithfulness analysis (Day 3)
+- [x] Statistical significance tests: Wilcoxon, Mann-Whitney, Cohen's d, Bootstrap CIs (Day 3)
+- [x] 11 publication plots generated (7 Day 2 + 4 Day 3)
 - [ ] Compare inherently interpretable vs. post-hoc explained models (Day 4)
-- [ ] Statistical analysis and Pareto plots (Day 5)
-- [ ] Draft findings (Day 5)
+- [ ] Pareto plots (accuracy vs. stability) and final paper draft (Day 5)
 
 ## References
 
