@@ -50,8 +50,8 @@ Where `||·||` is the L2 norm. A lower Lipschitz ratio = more stable explanation
 - [x] Surrogate fidelity + perturbation faithfulness analysis (Day 3)
 - [x] Statistical significance tests: Wilcoxon, Mann-Whitney, Cohen's d, Bootstrap CIs (Day 3)
 - [x] 11 publication plots generated (7 Day 2 + 4 Day 3)
-- [ ] Compare inherently interpretable vs. post-hoc explained models (Day 4)
-- [ ] Pareto plots (accuracy vs. stability) and final paper draft (Day 5)
+- [x] Compare inherently interpretable vs. post-hoc explained models (Day 4) — EBM wins on stability, Decision Tree surprisingly unstable
+- [ ] Final Pareto analysis, consolidated results table, and paper draft (Day 5)
 
 ## References
 

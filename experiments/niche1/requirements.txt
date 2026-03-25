@@ -6,3 +6,4 @@ shap>=0.43
 scipy>=1.11
 matplotlib>=3.7
 seaborn>=0.13
+interpret>=0.6

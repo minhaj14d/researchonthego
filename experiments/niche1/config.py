@@ -40,4 +40,14 @@ MODELS = {
         "max_depth": 5,
         "min_samples_leaf": 10,
     },
+    "ebm": {
+        "max_bins": 256,
+        "interactions": 10,
+        "outer_bags": 8,
+        "inner_bags": 0,
+    },
 }
+
+ALL_MODELS = ["xgboost", "logistic_regression", "decision_tree", "ebm"]
+BLACK_BOX_MODELS = ["xgboost", "logistic_regression"]
+INTERPRETABLE_MODELS = ["decision_tree", "ebm"]

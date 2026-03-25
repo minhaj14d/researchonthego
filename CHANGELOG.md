@@ -45,3 +45,12 @@
 | 2026-03-27 00:03 | research-notes/methods/metrics.md | Added metrics 5–7, statistical testing section |
 | 2026-03-27 00:03 | research-notes/niches/niche-1-explanation-stability.md | Updated task checklist with Day 3 completions |
 | 2026-03-27 00:04 | research-notes/daily-log/2026-03-27.md | Day 3 experiment log: EXP-005, EXP-006 |
+| 2026-03-28 00:00 | experiments/niche1/config.py | Added EBM config + ALL_MODELS / INTERPRETABLE_MODELS constants |
+| 2026-03-28 00:00 | experiments/niche1/train_baselines.py | Added EBM builder, native explain_local, 3D SHAP handling |
+| 2026-03-28 00:00 | experiments/niche1/run_day4.py | Full 4-model experiment runner with faithfulness + native stability |
+| 2026-03-28 00:00 | experiments/niche1/visualize_day4.py | 5 comparison plots: bars, Pareto, radar, native-vs-SHAP, heatmaps |
+| 2026-03-28 00:01 | experiments/niche1/requirements.txt | Added interpret package |
+| 2026-03-28 00:02 | experiments/niche1/results/day4_all_models.csv | 600 records across 4 models (auto-generated) |
+| 2026-03-28 00:02 | experiments/niche1/plots/ (5 new) | model_comparison_bars, accuracy_vs_stability, radar, native_vs_shap, heatmap |
+| 2026-03-28 00:03 | research-notes/daily-log/2026-03-28.md | Day 4 experiment log: EXP-007, EXP-008 |
+| 2026-03-28 00:03 | research-notes/niches/niche-1-explanation-stability.md | Updated task checklist with Day 4 completions |
