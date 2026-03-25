@@ -28,3 +28,10 @@
 | 2026-03-25 00:04 | experiments/niche1/results/summary_stats.csv | Aggregated stability statistics (auto-generated) |
 | 2026-03-25 00:05 | research-notes/daily-log/2026-03-25.md | Added EXP-002 results and key findings |
 | 2026-03-25 00:05 | research-notes/niches/niche-1-explanation-stability.md | Updated task checklist with Day 1 completions |
+| 2026-03-26 00:00 | experiments/niche1/feature_analysis.py | Per-feature stability + model-space Lipschitz script |
+| 2026-03-26 00:00 | experiments/niche1/visualize.py | 7-plot visualization suite for publication figures |
+| 2026-03-26 00:01 | experiments/niche1/config.py | Removed deprecated use_label_encoder and penalty params |
+| 2026-03-26 00:01 | experiments/niche1/results/per_feature_stability.csv | 4590 per-feature stability records (auto-generated) |
+| 2026-03-26 00:01 | experiments/niche1/results/model_lipschitz.csv | 90 model-space Lipschitz records (auto-generated) |
+| 2026-03-26 00:02 | experiments/niche1/plots/ (7 files) | All publication-quality plots generated |
+| 2026-03-26 00:03 | research-notes/daily-log/2026-03-26.md | Day 2 experiment log: EXP-003, EXP-004 |
