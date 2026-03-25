@@ -41,7 +41,7 @@
 
 \author{
   Anonymous Author(s)\\
-  \textit{Department of Computer Science}\\
+  \textit{Department of Applied Mathematics}\\
   \texttt{anonymous@university.edu}
 }
 
@@ -53,29 +53,33 @@
 
 % ── Abstract ─────────────────────────────────────────────────────────
 \begin{abstract}
-Post-hoc explanation methods like SHAP are widely used to interpret
-machine learning models, yet their behavior under realistic data
-perturbations remains poorly understood. We present a systematic
-empirical study of SHAP explanation stability across three perturbation
-types (Gaussian noise, label corruption, feature dropout), three UCI
-classification datasets, and four model families (XGBoost, Logistic
-Regression, Decision Tree, Explainable Boosting Machine). We introduce
-a suite of stability metrics including a Lipschitz-style sensitivity
-ratio and a model-space variant for training-time perturbations. Our
-experiments (6{,}147 runs) reveal five key findings:
-\textbf{(1)}~label corruption is catastrophically destructive,
-reducing Spearman~$\rho$ to 0.28 at merely 5\% corruption while
-Gaussian noise preserves $\rho > 0.95$;
-\textbf{(2)}~rank stability and magnitude stability are fundamentally
-different---XGBoost maintains $\rho = 0.96$ yet has Lipschitz ratio
-$L = 7.7$;
-\textbf{(3)}~EBM is the most stable model, achieving 2.2$\times$
-better stability than Logistic Regression on high-dimensional data;
-\textbf{(4)}~Decision Trees, despite being ``inherently
-interpretable,'' produce the least stable explanations; and
-\textbf{(5)}~SHAP surrogate fidelity can become \emph{negative},
-meaning explanations are actively misleading. We provide actionable
-guidelines for deploying interpretable ML in noisy environments.
+SHAP is one of the most popular methods for explaining machine
+learning predictions, but there is surprisingly little work on what
+happens to those explanations when the data is noisy or corrupted.
+In this paper, we run a set of experiments to measure how stable
+SHAP explanations are when the input data is perturbed in three
+ways: Gaussian noise added to features, random corruption of
+training labels, and dropout of feature values. We test across
+three UCI/Kaggle classification datasets and four model types
+(XGBoost, Logistic Regression, Decision Tree, and Explainable
+Boosting Machine), running over 6{,}000 experiments in total.
+We use a set of stability metrics grounded in Lipschitz-style
+sensitivity analysis and rank correlation measures.
+
+Our main results are: (1)~label corruption has a much larger effect
+on explanations than the other two perturbation types---Spearman
+rank correlation between original and perturbed SHAP rankings
+drops to $\rho = 0.28$ under just 5\% label noise, while Gaussian
+noise leaves it above 0.95; (2)~rank stability and magnitude
+stability turn out to be quite different things---a model can keep
+the same feature ranking while its actual SHAP values shift by
+$7.7\times$ the input perturbation; (3)~the Explainable Boosting
+Machine is the most stable model overall; (4)~Decision Trees,
+often called ``inherently interpretable,'' actually produce the
+least stable explanations; and (5)~under enough label corruption,
+SHAP fidelity can go negative, meaning the explanations are worse
+than useless. We also give some practical recommendations based
+on these findings.
 \end{abstract}
 
 \textbf{Keywords:} Explainability, SHAP, Stability, Distributional
@@ -84,49 +88,51 @@ Shift, Interpretable Machine Learning
 % ═════════════════════════════════════════════════════════════════════
 \section{Introduction}\label{sec:intro}
 
-Explainable AI (XAI) has become a standard requirement in high-stakes
-decision-making domains such as healthcare, finance, and criminal
-justice. SHAP (SHapley Additive exPlanations)~\cite{lundberg2017unified}
-is the most widely adopted post-hoc explanation method, providing
-locally faithful feature attributions grounded in cooperative game
-theory.
+In many applied settings---healthcare, finance, credit
+scoring---people need to understand \emph{why} a model makes the
+predictions it does, not just what those predictions are.
+SHAP~\cite{lundberg2017unified} has become one of the standard tools
+for this. It assigns each input feature a contribution score based
+on Shapley values from cooperative game theory, and it has nice
+theoretical properties: the attributions are locally faithful and
+add up to the model's prediction.
 
-However, a critical yet underexplored question threatens the
-reliability of SHAP-based decisions: \emph{do explanations remain
-stable when the underlying data changes?} In real-world deployments,
-data quality is variable---sensor noise, mislabeled samples, and
-missing features are routine. If SHAP explanations shift dramatically
-under these realistic perturbations, practitioners cannot trust that
-today's explanation will hold tomorrow.
+But there is a practical question that does not seem to get much
+attention: \emph{how much do these explanations change when the
+data is a bit noisy?} In real-world applications, data is rarely
+clean. Measurements have noise, labels sometimes get recorded
+wrong, and features can be missing. If a small amount of noise
+completely reshuffles which features SHAP says are important, then
+those explanations are not very useful in practice.
 
-Prior work on explanation robustness~\cite{alvarez2018robustness}
-introduced local Lipschitz continuity as a desirable property but
-focused narrowly on input perturbations for individual predictions. No
-systematic study has examined explanation stability across multiple
-perturbation types (input-time vs.\ training-time), multiple model
-families (black-box vs.\ inherently interpretable), and multiple
-stability dimensions (rank vs.\ magnitude vs.\ faithfulness).
+Some prior work has looked at related questions.
+Alvarez-Melis and Jaakkola~\cite{alvarez2018robustness} studied
+local Lipschitz continuity of explanations, and
+Slack~et~al.~\cite{slack2020fooling} showed that SHAP and LIME can
+be fooled by adversarial attacks. But these studies tend to look at
+one perturbation type at a time, or one model at a time, and they
+do not really compare across multiple dimensions of stability
+(does the ranking change? by how much do the values shift? is the
+explanation still faithful to the model?).
 
-\subsection{Contributions}
-
+In this paper, we try to address this gap by running a fairly
+comprehensive set of experiments. Specifically, we:
 \begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=1pt]
-  \item A \textbf{formal stability measurement framework} comprising
-    seven metrics: Spearman rank correlation, input-space and
-    model-space Lipschitz ratios, Top-$k$ Jaccard similarity,
-    surrogate fidelity, and perturbation faithfulness ratios.
-
-  \item A \textbf{systematic empirical study} spanning 6{,}147
-    experiments across 3 datasets, 4 model families, 3 perturbation
-    types, 3 intensity levels, and 5 random seeds, with full
-    statistical significance testing.
-
-  \item \textbf{Five novel findings} that challenge conventional
-    assumptions, including that ``inherently interpretable'' Decision
-    Trees produce \emph{less} stable explanations than post-hoc
-    explained XGBoost, and that SHAP fidelity can become negative.
-
-  \item \textbf{Actionable practitioner guidelines} for deploying
-    interpretable ML in noisy, real-world environments.
+  \item Define a set of stability metrics that capture rank
+    stability, magnitude sensitivity, and faithfulness. For
+    training-time perturbations where the inputs do not change
+    (only the labels do), we define a model-space Lipschitz ratio
+    that measures how SHAP values respond to changes in the model
+    parameters.
+  \item Run experiments across 3 datasets, 4 models, 3 perturbation
+    types, 3 intensity levels, and 5 random seeds (over 6{,}000
+    runs total), with statistical testing to check significance.
+  \item Report five findings that we think are interesting, a few
+    of which go against common assumptions---for instance, that
+    Decision Trees give more ``trustworthy'' explanations than
+    black-box models.
+  \item Provide some practical guidelines for people who want to
+    use SHAP in settings where data quality is uncertain.
 \end{enumerate}
 
 % ═════════════════════════════════════════════════════════════════════
@@ -134,98 +140,127 @@ stability dimensions (rank vs.\ magnitude vs.\ faithfulness).
 
 \subsection{Post-Hoc Explanation Methods}
 
-SHAP~\cite{lundberg2017unified} computes Shapley values from
-cooperative game theory to provide locally faithful, additive feature
-attributions. For tree-based models, TreeExplainer provides exact
-polynomial-time computation.
-LIME~\cite{ribeiro2016why} approximates local explanations via sparse
-linear surrogates. Both methods are evaluated predominantly on static,
-clean datasets.
+SHAP~\cite{lundberg2017unified} uses Shapley values from game theory
+to explain individual predictions. For tree-based models, the
+TreeExplainer algorithm computes these values exactly in polynomial
+time, which is nice because it avoids the approximation errors that
+come with sampling-based methods.
+LIME~\cite{ribeiro2016why} takes a different approach, fitting a
+sparse linear model around each prediction. Both methods are mainly
+evaluated on clean, static datasets in the original papers.
 
 \subsection{Explanation Robustness}
 
-Alvarez-Melis \& Jaakkola~\cite{alvarez2018robustness} proposed local
-Lipschitz continuity as a robustness metric, showing that many
-explanation methods are highly sensitive to small input perturbations.
-Slack~et~al.~\cite{slack2020fooling} demonstrated adversarial attacks
-on SHAP and LIME. Dombrowski~et~al.~\cite{dombrowski2019explanations}
-showed that explanations can be manipulated through geometric
-properties of neural networks.
+Alvarez-Melis and Jaakkola~\cite{alvarez2018robustness} proposed
+local Lipschitz continuity as a way to measure how sensitive
+explanations are to small input changes, and found that many methods
+are quite sensitive. Slack~et~al.~\cite{slack2020fooling} went further
+and showed that SHAP and LIME can be deliberately fooled by an
+adversary. Dombrowski~et~al.~\cite{dombrowski2019explanations} showed
+a related result for gradient-based explanations on neural networks.
 
-\subsection{Gaps in Existing Literature}
+\subsection{What Is Missing}
 
-A 2026 comparative analysis of 16 interpretable
-methods~\cite{comparative2026} benchmarked accuracy across 216 datasets
-but did \emph{not} measure explanation stability under perturbation. A
+A recent large-scale comparison of 16 interpretable
+methods~\cite{comparative2026} tested accuracy on 216 datasets,
+but stability under perturbation was not part of the evaluation. A
 study of sparse Vision Transformers~\cite{sparse2026vit} found that
-structural sparsity ``redistributes rather than isolates computation,''
-suggesting model simplicity does not guarantee explanation stability.
-The Schmidt Sciences 2026 Interpretability
-RFP~\cite{schmidt2026rfp} explicitly calls for explanations that
-``generalize beyond academic benchmarks to realistic use cases.''
+making a model structurally simpler does not necessarily make its
+explanations more stable---sparsity ``redistributes rather than
+isolates computation.'' The Schmidt Sciences 2026
+RFP~\cite{schmidt2026rfp} specifically asks for explanation methods
+that work ``beyond academic benchmarks.'' All of this suggests that
+there is room for a study that looks at explanation stability in a
+more structured way: across different kinds of perturbations,
+different model types, and different notions of what ``stable''
+means.
 
 % ═════════════════════════════════════════════════════════════════════
 \section{Methodology}\label{sec:method}
 
 \subsection{Stability Metrics}\label{sec:metrics}
 
-We evaluate explanation stability along three orthogonal dimensions.
+We wanted to measure stability along several dimensions, since a
+single number does not tell the full story. We settled on three
+categories.
 
 \paragraph{Rank stability.}
-\emph{Spearman rank correlation} ($\rho_s$) measures whether the
-ordering of feature importances is preserved after perturbation.
-$\rho_s > 0.8$ indicates strong stability.
-\emph{Top-$k$ Jaccard similarity} ($J_k$) measures the overlap of the
-$k$ most important features before and after perturbation:
+The most basic question is whether the ordering of features by
+importance stays the same. We measure this with \emph{Spearman rank
+correlation} ($\rho_s$) between the original and perturbed SHAP
+rankings. A value of $\rho_s > 0.8$ indicates the rankings are
+largely preserved. We also use \emph{Top-$k$ Jaccard similarity}
+to check whether the set of most important features is preserved:
 \begin{equation}\label{eq:jaccard}
   J_k = \frac{|S_k \cap S'_k|}{|S_k \cup S'_k|}, \quad k \in \{3,5\}.
 \end{equation}
 
 \paragraph{Magnitude stability.}
-The \emph{input-space Lipschitz ratio} quantifies how fast SHAP values
-change relative to input perturbations:
+Even if the ranking is preserved, the actual SHAP values might shift
+a lot. We measure this using a Lipschitz-style ratio. The
+\emph{input-space Lipschitz ratio} is:
 \begin{equation}\label{eq:lipschitz}
   L = \frac{\|\mathrm{SHAP}(\mathbf{x}') - \mathrm{SHAP}(\mathbf{x})\|_2}
-           {\|\mathbf{x}' - \mathbf{x}\|_2}.
+           {\|\mathbf{x}' - \mathbf{x}\|_2},
 \end{equation}
-For training-time perturbations (label flip) where $\Delta\mathbf{x}=0$,
-we introduce a \emph{model-space Lipschitz ratio}:
+which tells us how much the SHAP values change per unit of input
+change. This works for Gaussian noise and feature dropout, where
+the input actually changes. But for label flip, the inputs stay the
+same and only the model changes (because it gets retrained). So we
+define a \emph{model-space Lipschitz ratio}:
 \begin{equation}\label{eq:model_lipschitz}
-  L_\theta = \frac{\|\Delta\mathrm{SHAP}\|_2}{\|\Delta\boldsymbol\theta\|_2},
+  L_\theta = \frac{\|\Delta\mathrm{SHAP}\|_2}
+                   {\|\Delta\boldsymbol\theta\|_2},
 \end{equation}
-where $\boldsymbol\theta$ denotes model parameters.
+where $\boldsymbol\theta$ represents the model parameters (e.g.,
+coefficients for Logistic Regression, feature importances for
+tree-based models).
 
 \paragraph{Faithfulness.}
-\emph{Surrogate fidelity} measures how well the SHAP additive
-decomposition $g(\mathbf{x}) = \mathbb{E}[f(\mathbf{x})] +
-\sum_j \phi_j(\mathbf{x})$ reproduces the model's predictions:
+We also want to know if the explanation is still \emph{accurate} as
+a description of the model. \emph{Surrogate fidelity} checks how
+well the SHAP additive decomposition reproduces the model's
+predictions:
 \begin{equation}\label{eq:fidelity}
   \text{Fidelity} = 1 - \frac{\text{MAE}(f, g)}
-                              {\text{MAE}(f, \bar{y})}.
+                              {\text{MAE}(f, \bar{y})},
 \end{equation}
-Negative fidelity indicates the SHAP surrogate is worse than
-predicting the mean.
-\emph{Perturbation faithfulness ratio} $\text{FR}_k$ is the ratio of
-prediction drop when masking top-$k$ vs.\ bottom-$k$ SHAP features.
+where $g(\mathbf{x}) = \mathbb{E}[f(\mathbf{x})] + \sum_j
+\phi_j(\mathbf{x})$ is the SHAP reconstruction. If this goes
+negative, the SHAP explanation does worse than just predicting the
+mean---it is actively misleading. We also compute a
+\emph{perturbation faithfulness ratio} $\text{FR}_k$: the ratio of
+the prediction drop when we mask the top-$k$ SHAP features vs.\
+the bottom-$k$. A high ratio confirms SHAP is pointing at the
+right features.
 
 \subsection{Perturbation Protocol}\label{sec:perturbation}
 
-We employ three perturbation types modeling different real-world data
-quality issues:
+We apply three types of perturbation, each meant to model a
+different kind of data quality problem:
 \begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=1pt]
-  \item \textbf{Gaussian noise} (input-time):
+  \item \textbf{Gaussian noise} (applied at test time):
     $\mathbf{x}' = \mathbf{x} + \boldsymbol\varepsilon$,
     $\boldsymbol\varepsilon \sim \mathcal{N}(0,\sigma^2\mathbf{I})$,
-    $\sigma \in \{0.05, 0.10, 0.15\}$.
-  \item \textbf{Label flip} (training-time): randomly corrupt
-    $y_{\text{train}}$ at rates $\{5\%, 10\%, 15\%\}$; the model is
-    retrained.
-  \item \textbf{Feature dropout} (input-time): zero-out feature
-    values element-wise with probability
-    $\{0.05, 0.10, 0.15\}$.
+    with $\sigma \in \{0.05, 0.10, 0.15\}$. This models sensor
+    noise or measurement error. The model is not retrained.
+  \item \textbf{Label flip} (applied at training time): randomly
+    flip $y_{\text{train}}$ labels at rates $\{5\%, 10\%, 15\%\}$.
+    This models annotation errors. The model \emph{is} retrained
+    on the corrupted labels.
+  \item \textbf{Feature dropout} (applied at test time): set
+    feature values to zero with probability
+    $\{0.05, 0.10, 0.15\}$. This models missing data. The model is
+    not retrained.
 \end{enumerate}
 
 \subsection{Datasets}\label{sec:datasets}
+
+We use three standard classification datasets (Table~\ref{tab:datasets}).
+These are small-to-medium in size, which let us run many
+experimental configurations. All features are standardized to
+zero mean and unit variance. We use 80/20 stratified train-test
+splits and repeat each experiment with 5 different random seeds.
 
 \begin{table}[t]
 \centering
@@ -242,10 +277,11 @@ Breast Cancer~\cite{wolberg1995breast} & 569  & 30 & Oncology       & UCI    \\
 \end{tabular}
 \end{table}
 
-All datasets are standardized ($z$-score), split 80/20 with
-stratification, and evaluated across 5 random seeds.
-
 \subsection{Models}\label{sec:models}
+
+We pick two ``black-box'' models and two ``interpretable'' models
+(Table~\ref{tab:models}). This lets us compare whether model
+transparency actually helps with explanation stability.
 
 \begin{table}[t]
 \centering
@@ -266,19 +302,26 @@ EBM~\cite{nori2019interpretml}      & Interpretable & Native local  & 256 bins, 
 % ═════════════════════════════════════════════════════════════════════
 \section{Results}\label{sec:results}
 
-\subsection{Finding 1: Label Corruption Is Catastrophically
-            Destructive}\label{sec:f1}
+We ran 6{,}147 experiment configurations in total. Below, we
+organize the results around five main observations.
 
-Under Gaussian noise and feature dropout, Spearman $\rho$ remains
-above 0.95 across all model-dataset combinations. Under label flip,
-$\rho$ collapses to as low as 0.28 (Breast Cancer, Logistic
-Regression). All six label-flip-vs-others comparisons are significant
-at $p < 0.001$ (Mann--Whitney~$U$, Cohen's $d$ up to 8.70).
+\subsection{Label Corruption Dominates Everything Else}\label{sec:f1}
+
+This was the clearest result. Under Gaussian noise and feature
+dropout, Spearman $\rho$ stays above 0.95 for every model-dataset
+pair we tested. But under label flip, it drops sharply---down to
+0.28 for Breast Cancer with Logistic Regression
+(Table~\ref{tab:perturbation}).
+
+The difference is statistically significant in all cases. We ran
+Mann--Whitney $U$ tests comparing label flip against the other two
+perturbation types, and all six comparisons gave $p < 0.001$
+with Cohen's $d$ ranging from 1.73 to 8.70.
 
 \begin{table}[t]
 \centering
-\caption{Mean Spearman $\rho$ by perturbation type (averaged across
-  all four models and perturbation levels).}\label{tab:perturbation}
+\caption{Mean Spearman $\rho$ by perturbation type, averaged across
+  all four models and perturbation levels.}\label{tab:perturbation}
 \small
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -294,59 +337,67 @@ Breast Cancer      & $0.999 \pm 0.001$ & $0.996 \pm 0.003$ & $0.425 \pm 0.164$ \
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{stability_heatmap.png}
-\caption{Explanation stability matrix. Green cells indicate stable
-  explanations ($\rho \approx 1$); red cells indicate instability.
-  Label flip is the only perturbation that causes meaningful
-  degradation.}\label{fig:heatmap}
+\caption{Stability heatmap across all conditions. Green means stable
+  ($\rho \approx 1$); red means unstable. The label flip row stands
+  out clearly.}\label{fig:heatmap}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{degradation_curves.png}
-\caption{Stability degradation curves: Spearman $\rho$ vs.\
-  perturbation level for each dataset. Label flip (red) causes steep
-  decline; Gaussian noise (blue) and feature dropout (orange) remain
-  near 1.0.}\label{fig:degradation}
+\caption{How $\rho$ degrades as perturbation intensity increases.
+  Label flip (red) drops steeply; the other two stay
+  flat.}\label{fig:degradation}
 \end{figure}
 
-\subsection{Finding 2: Rank Stability $\neq$ Magnitude
-            Stability}\label{sec:f2}
+\subsection{Rank Stability and Magnitude Stability Are Not the
+            Same Thing}\label{sec:f2}
 
-XGBoost on Heart Disease maintains $\rho = 0.96$ under 5\% Gaussian
-noise (rank-stable), but has Lipschitz ratio $L = 7.67$
-(magnitude-unstable). SHAP values change $7.7\times$ faster than the
-input perturbation in $\ell_2$ norm, \emph{despite maintaining the
-same feature ranking}. Logistic Regression has $L < 0.67$ across all
-conditions.
+This was somewhat surprising to us. XGBoost on Heart Disease has
+$\rho = 0.96$ under 5\% Gaussian noise, which looks very stable if
+you only look at rankings. But its Lipschitz ratio is $L = 7.67$,
+meaning the SHAP values move $7.7\times$ faster than the input
+perturbation in $\ell_2$ norm. The ranking stays the same, but the
+actual numbers change a lot.
+
+Logistic Regression, by contrast, has $L < 0.67$ across all
+conditions---it is stable in both senses. This distinction matters
+because in some applications (e.g., regulatory compliance) people
+care about the exact SHAP values, not just which feature is on top.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{rank_vs_magnitude.png}
-\caption{Rank stability ($\rho$) vs.\ magnitude sensitivity
-  (Lipschitz~$L$). XGBoost (circles) clusters at high~$\rho$ but
-  high~$L$; Logistic Regression (triangles) clusters at high~$\rho$
-  and low~$L$.}\label{fig:rank_mag}
+\caption{Rank stability ($\rho$) plotted against magnitude
+  sensitivity ($L$). Points in the upper-right corner are
+  rank-stable but magnitude-unstable.}\label{fig:rank_mag}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{lipschitz_comparison.png}
-\caption{Left: input-space Lipschitz ratio (Gaussian noise and feature
-  dropout). Right: model-space Lipschitz ratio (label flip). XGBoost
-  amplifies parameter changes $10\text{--}20\times$ more than Logistic
-  Regression.}\label{fig:lipschitz}
+\caption{Lipschitz ratios across models. Left: input-space (Gaussian
+  noise, feature dropout). Right: model-space (label
+  flip).}\label{fig:lipschitz}
 \end{figure}
 
-\subsection{Finding 3: EBM Is the Most Stable Model}\label{sec:f3}
+\subsection{EBM Gives the Most Stable Explanations}\label{sec:f3}
 
-Under label flip, EBM achieves the highest or tied-highest
-Spearman~$\rho$ on 2 of 3 datasets (Table~\ref{tab:model_stability}).
-On Breast Cancer (30~features), EBM is $2.2\times$ more stable than
-Logistic Regression.
+Among the four models, the Explainable Boosting
+Machine~\cite{nori2019interpretml} tends to come out on top for
+stability under label flip (Table~\ref{tab:model_stability}). On
+Breast Cancer, which has 30 features, EBM's $\rho = 0.608$ is about
+$2.2\times$ higher than Logistic Regression's $0.281$.
+
+We think this is because of EBM's additive structure: it models each
+feature independently as $f(\mathbf{x}) = \sum_j h_j(x_j)$, so
+corrupted labels cannot easily cause one feature's contribution to
+``spill over'' into another.
 
 \begin{table}[t]
 \centering
-\caption{Mean Spearman $\rho$ under label flip by model.}\label{tab:model_stability}
+\caption{Mean Spearman $\rho$ under label flip, by
+  model.}\label{tab:model_stability}
 \small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -362,164 +413,202 @@ Breast Ca.& \textbf{0.608} & 0.472 & 0.281 & 0.341 \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{model_comparison_bars.png}
-\caption{Explanation stability (mean Spearman $\rho$) under label
-  flip across all four model families.}\label{fig:bars}
+\caption{Stability (mean $\rho$) under label flip, grouped by
+  model.}\label{fig:bars}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{radar_comparison.png}
-\caption{Multi-metric radar chart comparing all four models on
-  accuracy, AUC-ROC, SHAP stability, surrogate fidelity, and Top-3
-  Jaccard under label flip.}\label{fig:radar}
+\caption{Radar chart comparing all four models across accuracy,
+  AUC-ROC, SHAP stability, fidelity, and Top-3 Jaccard under
+  label flip. EBM has the most balanced
+  profile.}\label{fig:radar}
 \end{figure}
 
-\subsection{Finding 4: Decision Trees Are Surprisingly
-            Unstable}\label{sec:f4}
+\subsection{Decision Trees Are Less Stable Than You Would
+            Expect}\label{sec:f4}
 
-Despite being ``inherently interpretable,'' Decision Trees produce
-among the least stable explanations ($\rho = 0.341$ on Breast Cancer,
-$0.656$ on Heart Disease). Trees are piecewise-constant: small label
-changes can shift split boundaries, restructuring the entire tree
-topology.
+This was probably the most counterintuitive result. Decision Trees
+are often described as ``inherently interpretable,'' which might
+lead you to think their explanations are also stable. But they are
+actually among the worst: $\rho = 0.341$ on Breast Cancer and
+$0.656$ on Heart Disease under label flip.
+
+The reason, we believe, is structural. A Decision Tree is
+piecewise-constant: each leaf assigns a fixed value, and the
+boundaries between regions are determined by split points. A small
+change in training labels can move a split point, which restructures
+the entire tree topology and redistributes feature importance in a
+way that is hard to predict.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{blackbox_vs_interpretable_heatmap.png}
-\caption{Side-by-side stability heatmaps for black-box (left) and
-  interpretable (right) models. Decision Trees show comparable or
-  worse instability under label flip.}\label{fig:bb_vs_interp}
+\caption{Black-box vs.\ interpretable model stability. Decision
+  Trees (right panel, lower rows) show as much or more instability
+  as the black-box models under label flip.}\label{fig:bb_vs_interp}
 \end{figure}
 
-\subsection{Finding 5: SHAP Fidelity Can Become
-            Negative}\label{sec:f5}
+\subsection{SHAP Fidelity Can Go Negative}\label{sec:f5}
 
-Under 15\% label flip, surrogate fidelity drops to $-0.50$ (Diabetes +
-Logistic Regression). Negative fidelity means the SHAP additive
-decomposition is worse than predicting the dataset
-mean---explanations are actively misleading. All six
-faithfulness-degradation tests under label flip are significant at
-$p < 0.01$ (Cohen's $d = 1.81\text{--}2.35$).
+Under 15\% label flip, surrogate fidelity drops to $-0.50$ for
+Pima Diabetes with Logistic Regression. Negative fidelity means
+the SHAP additive decomposition does worse at predicting the
+model's output than just guessing the average---the explanation is
+not just noisy, it is actively wrong.
+
+All six faithfulness tests under label flip are significant at
+$p < 0.01$ (Mann--Whitney $U$, Cohen's $d$ between 1.81 and 2.35).
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{faithfulness_degradation.png}
-\caption{Surrogate fidelity under perturbation. Label flip (red)
-  causes fidelity to collapse---even below zero for Pima Diabetes,
-  indicating actively misleading explanations.}\label{fig:fidelity}
+\caption{Surrogate fidelity vs.\ perturbation intensity. Under
+  label flip, fidelity can drop below zero (dashed line), indicating
+  the explanation is worse than the trivial
+  baseline.}\label{fig:fidelity}
 \end{figure}
 
 % ═════════════════════════════════════════════════════════════════════
 \section{Discussion}\label{sec:discussion}
 
-\subsection{Why Label Flip Is Uniquely Destructive}
+\subsection{Why Label Flip Is So Much Worse}
 
-Gaussian noise and feature dropout perturb the input space while
-keeping the model fixed. SHAP's exact computation (TreeExplainer,
-LinearExplainer) remains faithful to the unchanged model. Label flip
-forces retraining, fundamentally altering the decision boundary. The
-instability is model-intrinsic, not an artifact of the explanation
-method---confirmed by our finding that native feature importances and
-SHAP-based importances correlate at $r \approx 0.99$.
+The key difference is that Gaussian noise and feature dropout change
+the test inputs but leave the model unchanged. Since SHAP's exact
+methods (TreeExplainer, LinearExplainer) faithfully reflect the model,
+the explanations stay accurate even if the inputs are a bit different.
+
+Label flip, on the other hand, corrupts the training data and forces
+the model to be retrained. The decision boundary itself moves. So
+the instability is coming from the model, not from the explanation
+method. We confirmed this by checking that native feature importances
+(from the model directly) and SHAP-based importances correlate at
+$r \approx 0.99$, meaning SHAP is faithfully reporting what the
+model thinks---it is the model that has changed.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{native_vs_shap.png}
-\caption{Native vs.\ SHAP-based feature importance stability under
-  label flip. Points cluster tightly along the diagonal, confirming
-  the instability is model-intrinsic.}\label{fig:native}
+\caption{Native feature importance vs.\ SHAP stability under label
+  flip. The tight diagonal clustering confirms that SHAP is
+  faithfully reflecting model-level instability.}\label{fig:native}
 \end{figure}
 
-\subsection{The Fragility--Utility Trade-Off}
+\subsection{The Most Important Features Are the Most Fragile}
 
-Per-feature analysis reveals that the most important features
-(Glucose for Diabetes, worst~area for Breast Cancer, ca for Heart
-Disease) are also the most unstable under label corruption
-(Figure~\ref{fig:perfeature}). This creates a \emph{fragility--utility
-trade-off}: the features a practitioner would rely on most are the
-ones whose explanations are least trustworthy.
+When we looked at individual features, we found that the ones with
+the highest SHAP values (Glucose for Diabetes, worst area for
+Breast Cancer, ca for Heart Disease) are also the ones whose
+explanations shift the most under label corruption
+(Figure~\ref{fig:perfeature}). This is inconvenient: the features
+you would rely on most for decision-making are the ones whose
+stability you can trust least.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{per_feature_stability.png}
-\caption{Per-feature explanation stability under 15\% label flip.
-  Top row: most unstable features (red). Bottom row: most stable
-  features (green). The most predictive features are the most
-  fragile.}\label{fig:perfeature}
+\caption{Per-feature stability under 15\% label flip. Red bars are
+  the most unstable features; green bars are the most stable.
+  The clinically important features tend to be
+  red.}\label{fig:perfeature}
 \end{figure}
 
-\subsection{Accuracy--Stability Pareto Frontier}
+\subsection{Accuracy vs.\ Stability: A Trade-Off}
 
-Figure~\ref{fig:pareto} shows the accuracy--stability Pareto frontier.
-No model dominates on both axes across all datasets, confirming that
-accuracy and explanation stability are genuinely competing objectives.
+Figure~\ref{fig:pareto} shows the accuracy--stability Pareto
+frontier. No single model dominates on both axes across all datasets.
+For example, Logistic Regression on Breast Cancer gets 98.1\%
+accuracy but the worst stability ($\rho = 0.28$). EBM consistently
+sits on or near the frontier, making it a reasonable default choice
+if you care about both.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{pareto_frontier.png}
-\caption{Accuracy--stability Pareto frontier under label
-  corruption. EBM consistently appears on or near the frontier.
-  Logistic Regression achieves the highest accuracy on Breast Cancer
-  but the worst stability.}\label{fig:pareto}
+\caption{Accuracy vs.\ stability Pareto frontier under label
+  corruption. EBM (green) tends to be on or near the
+  frontier.}\label{fig:pareto}
 \end{figure}
 
-\subsection{Practitioner Guidelines}
+\subsection{Practical Recommendations}
 
-Based on our findings, we recommend:
+Based on what we observed:
 \begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=1pt]
-  \item \textbf{Always test explanation stability before deployment.}
-    High accuracy with unstable explanations (e.g., LogReg on Breast
-    Cancer: 98.1\% accuracy, $\rho = 0.28$) is unsafe for
-    explanation-dependent decisions.
-  \item \textbf{Prefer EBMs over Decision Trees} for inherently
-    interpretable models. EBM's additive structure provides competitive
-    accuracy \emph{and} superior stability.
+  \item \textbf{Test stability before deploying explanations.} A
+    model can have high accuracy and completely unreliable
+    explanations. Checking $\rho$ under simulated label noise is
+    a simple sanity check.
+  \item \textbf{If you need an interpretable model, consider EBM
+    over Decision Trees.} EBM's additive structure seems to give
+    it a stability advantage that plain trees do not have.
   \item \textbf{Report both rank and magnitude stability.}
-    Spearman~$\rho$ alone can mask dramatic SHAP value changes.
-  \item \textbf{Monitor label quality as a priority.} 5\% label
-    corruption causes more explanation damage than 15\% Gaussian noise.
-  \item \textbf{Check surrogate fidelity.} If fidelity is negative,
-    SHAP explanations should not be used for decision-making.
+    Spearman $\rho$ alone can hide large shifts in SHAP values.
+  \item \textbf{Pay attention to label quality.} In our experiments,
+    5\% label corruption causes more damage to explanations than
+    15\% Gaussian noise.
+  \item \textbf{Check fidelity.} If surrogate fidelity is negative,
+    the SHAP explanations are worse than useless and should not be
+    the basis for any decision.
 \end{enumerate}
 
 \subsection{Limitations}
 
+We want to be upfront about what this study does not cover:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
-  \item \textbf{Sample size:} 5 random seeds limit statistical power
-    (minimum Wilcoxon $p = 0.0625$). We recommend $n \geq 20$.
-  \item \textbf{Datasets:} Three small-to-medium UCI datasets.
-    Validation on large-scale data is needed.
-  \item \textbf{Perturbation model:} Synthetic perturbations may
-    differ from real-world distributional shift (e.g., concept drift).
-  \item \textbf{EBM--SHAP equivalence:} EBM's local explanations are
-    exact for the additive model but break for interaction terms.
+  \item We use only 5 random seeds per configuration. This limits
+    the statistical power of paired model comparisons (the smallest
+    possible Wilcoxon $p$-value with $n=5$ is 0.0625). More seeds
+    would strengthen the conclusions.
+  \item The three datasets are all small-to-medium tabular
+    classification problems. We do not know how well these results
+    transfer to large datasets, regression tasks, or non-tabular
+    data like images or text.
+  \item Our perturbations are synthetic. Real-world distributional
+    shift often involves more complex patterns like concept drift or
+    covariate shift, which we do not model here.
+  \item For EBM, the local explanation is exact for the main additive
+    terms, but this breaks down for the pairwise interaction terms
+    that EBM also fits. We did not investigate this in detail.
 \end{itemize}
 
 % ═════════════════════════════════════════════════════════════════════
 \section{Conclusion}\label{sec:conclusion}
 
-We present the first systematic study of SHAP explanation stability
-across perturbation types, model families, and stability dimensions.
-Our 6{,}147-experiment study reveals that label corruption is
-catastrophically destructive ($\rho$ as low as 0.28), that rank and
-magnitude stability are fundamentally different, that EBM provides the
-best stability--accuracy trade-off, that Decision Trees' ``inherent
-interpretability'' does not confer explanation stability, and that SHAP
-fidelity can become negative under label corruption.
+We set out to answer a simple question: how stable are SHAP
+explanations when the data is noisy? The answer, at least for the
+datasets and models we tested, is ``it depends a lot on the type
+of noise.''
 
-Any deployment of SHAP-based explanations in environments with
-uncertain data quality should include stability testing as a standard
-validation step.
+Gaussian noise and feature dropout barely affect SHAP rankings.
+Label corruption, even at low rates, can completely reshape which
+features SHAP considers important. Among the four models we tested,
+EBM provides the best balance of accuracy and stability, while
+Decision Trees---despite their reputation for
+transparency---produce the most fragile explanations. Perhaps most
+concerning, we found cases where SHAP's fidelity goes negative under
+label corruption, meaning the explanation is actively misleading
+rather than just noisy.
+
+We think the practical takeaway is straightforward: if you are using
+SHAP explanations to make decisions, and there is any chance your
+data has label noise, you should test how stable those explanations
+are before relying on them. We release the full experimental code
+and data to make this easy to reproduce and extend.
 
 \subsection{Future Work}
 
+Several directions seem worth exploring:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
-  \item Extension to temporal distributional drift (concept drift)
-  \item Adversarial perturbations to maximally destabilize
-    explanations
-  \item Scaling to high-dimensional datasets (genomics, NLP
-    embeddings)
-  \item Stability-regularized training objectives
+  \item Extending to temporal distributional shift, where the
+    data changes over time (concept drift).
+  \item Testing adversarial perturbations designed specifically to
+    break explanations.
+  \item Scaling up to higher-dimensional data (e.g., genomics,
+    NLP embeddings).
+  \item Investigating whether training objectives can be modified
+    to encourage more stable explanations.
 \end{itemize}
 
 % ═════════════════════════════════════════════════════════════════════
@@ -530,9 +619,8 @@ validation step.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{final_summary_panel.png}
-\caption{Comprehensive $3 \times 3$ summary: datasets (columns)
-  vs.\ metrics (rows) under label flip for all four
-  models.}\label{fig:summary_panel}
+\caption{Summary panel: datasets (columns) vs.\ metrics (rows) under
+  label flip for all four models.}\label{fig:summary_panel}
 \end{figure}
 
 \begin{figure}[h]
@@ -545,35 +633,32 @@ validation step.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{confidence_intervals.png}
-\caption{Bootstrap 95\% confidence intervals for Spearman~$\rho$
-  across all conditions. Label flip CIs are cleanly separated
-  from Gaussian and dropout CIs.}\label{fig:ci}
+\caption{Bootstrap 95\% confidence intervals for Spearman~$\rho$.
+  The label flip intervals are clearly separated from the other
+  two perturbation types.}\label{fig:ci}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{significance_forest.png}
-\caption{Forest plot of Cohen's $d$ effect sizes for XGBoost vs.\
-  Logistic Regression. Red bars indicate $p < 0.01$; gray bars are
-  not significant.}\label{fig:forest}
+\caption{Forest plot of Cohen's $d$ effect sizes. Red bars indicate
+  $p < 0.01$.}\label{fig:forest}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{faithfulness_ratio.png}
-\caption{Perturbation faithfulness ratio ($\text{FR}_{k}$) boxplots.
-  A ratio $\gg 1$ confirms SHAP correctly identifies important
-  features. Ratios decrease under label flip, indicating degraded
-  faithfulness.}\label{fig:fr}
+\caption{Perturbation faithfulness ratio ($\text{FR}_{k}$). A ratio
+  well above 1 means SHAP is identifying the right features. Under
+  label flip, the ratios shrink.}\label{fig:fr}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{feature_correlation_heatmap.png}
-\caption{Per-feature Pearson correlation (SHAP stability) under label
-  flip for each dataset (XGBoost). Most important features retain
-  high sample-level correlation, but their aggregate ranking
-  shifts.}\label{fig:feat_corr}
+\caption{Per-feature SHAP correlation under label flip. Individual
+  features keep high sample-level correlation, but the aggregate
+  ranking across features shifts.}\label{fig:feat_corr}
 \end{figure}
 
 % ═════════════════════════════════════════════════════════════════════

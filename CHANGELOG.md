@@ -65,3 +65,5 @@
 | 2026-03-25 12:00 | latex/main.tex | Overleaf-ready LaTeX paper: 6 sections, 18 figures, 5 tables, appendix |
 | 2026-03-25 12:00 | latex/references.bib | BibTeX bibliography with 16 entries |
 | 2026-03-25 12:00 | latex/figures/*.png | Copied all 18 publication plots into LaTeX figures directory |
+| 2026-03-25 12:30 | latex/main_expert_backup.tex | Backup of expert-tone version before undergrad rewrite |
+| 2026-03-25 12:30 | latex/main.tex | Rewritten in undergraduate applied-math tone: less jargon, more direct |
