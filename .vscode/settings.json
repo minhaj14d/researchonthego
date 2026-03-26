@@ -1,0 +1,82 @@
+{
+  "latex-workshop.latex.build.fromWorkspaceFolder": false,
+  "latex-workshop.latex.search.rootFiles.include": ["latex/main.tex"],
+  "latex-workshop.latex.external.build.command": "cmd.exe",
+  "latex-workshop.latex.external.build.args": ["/c", "build-latex.cmd"],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "C:/Program Files/MiKTeX/miktex/bin/x64/latexmk.exe",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "-g",
+        "-f",
+        "-pvc-",
+        "%DOC%"
+      ],
+      "env": {
+        "Path": "C:\\Strawberry\\perl\\bin;C:\\Program Files\\MiKTeX\\miktex\\bin\\x64"
+      }
+    },
+    {
+      "name": "pdflatex",
+      "command": "C:/Program Files/MiKTeX/miktex/bin/x64/pdflatex.exe",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-halt-on-error",
+        "%DOC%"
+      ],
+      "env": {
+        "Path": "C:\\Strawberry\\perl\\bin;C:\\Program Files\\MiKTeX\\miktex\\bin\\x64"
+      }
+    },
+    {
+      "name": "bibtex",
+      "command": "C:/Program Files/MiKTeX/miktex/bin/x64/bibtex.exe",
+      "args": ["%DOCFILE%"],
+      "env": {
+        "Path": "C:\\Strawberry\\perl\\bin;C:\\Program Files\\MiKTeX\\miktex\\bin\\x64"
+      }
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk (MiKTeX + Strawberry Perl)",
+      "tools": ["latexmk"]
+    },
+    {
+      "name": "pdflatex → bibtex → pdflatex ×2 (no latexmk)",
+      "tools": ["pdflatex", "bibtex", "pdflatex", "pdflatex"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "latexmk (MiKTeX + Strawberry Perl)",
+  "latex-workshop.latex.autoClean.run": "onBuilt",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.out",
+    "*.toc",
+    "*.acn",
+    "*.acr",
+    "*.alg",
+    "*.glg",
+    "*.glo",
+    "*.gls",
+    "*.fls",
+    "*.log",
+    "*.fdb_latexmk",
+    "*.snm",
+    "*.nav",
+    "*.synctex.gz"
+  ]
+}

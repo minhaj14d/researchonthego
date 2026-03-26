@@ -1,0 +1,96 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alvarez-Melis and Jaakkola(2018)]{alvarez2018robustness}
+David Alvarez-Melis and Tommi~S. Jaakkola.
+\newblock On the robustness of interpretability methods.
+\newblock In \emph{ICML Workshop on Human Interpretability in Machine
+  Learning}, 2018.
+
+\bibitem[Billa et~al.(2026)Billa, Orlandi, Guidetti, and
+  Mandreoli]{comparative2026}
+Mattia Billa, Giovanni Orlandi, Veronica Guidetti, and Federica Mandreoli.
+\newblock A comparative analysis of interpretable machine learning methods.
+\newblock \emph{arXiv preprint arXiv:2601.00428}, 2026.
+
+\bibitem[Chen and Guestrin(2016)]{chen2016xgboost}
+Tianqi Chen and Carlos Guestrin.
+\newblock {XGBoost}: A scalable tree boosting system.
+\newblock \emph{Proceedings of the 22nd ACM SIGKDD International Conference on
+  Knowledge Discovery and Data Mining}, pages 785--794, 2016.
+
+\bibitem[Dombrowski et~al.(2019)Dombrowski, Alber, Anders, Ackermann,
+  M{\"u}ller, and Kessel]{dombrowski2019explanations}
+Ann-Kathrin Dombrowski, Maximilian Alber, Christopher Anders, Marcel Ackermann,
+  Klaus-Robert M{\"u}ller, and Pan Kessel.
+\newblock Explanations can be manipulated and geometry is to blame.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~32, 2019.
+
+\bibitem[Janosi et~al.(1988)Janosi, Steinbrunn, Pfisterer, and
+  Detrano]{uci_heart}
+Andras Janosi, William Steinbrunn, Matthias Pfisterer, and Robert Detrano.
+\newblock Heart disease data set.
+\newblock UCI Machine Learning Repository, 1988.
+
+\bibitem[Lundberg and Lee(2017)]{lundberg2017unified}
+Scott~M. Lundberg and Su-In Lee.
+\newblock A unified approach to interpreting model predictions.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~30, 2017.
+
+\bibitem[Nori et~al.(2019)Nori, Jenkins, Koch, and
+  Caruana]{nori2019interpretml}
+Harsha Nori, Samuel Jenkins, Paul Koch, and Rich Caruana.
+\newblock {InterpretML}: A unified framework for machine learning
+  interpretability.
+\newblock \emph{arXiv preprint arXiv:1909.09223}, 2019.
+
+\bibitem[Ribeiro et~al.(2016)Ribeiro, Singh, and Guestrin]{ribeiro2016why}
+Marco~Tulio Ribeiro, Sameer Singh, and Carlos Guestrin.
+\newblock ``{W}hy should {I} trust you?'': Explaining the predictions of any
+  classifier.
+\newblock In \emph{Proceedings of the 22nd ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, pages 1135--1144, 2016.
+
+\bibitem[{Schmidt Sciences}(2026)]{schmidt2026rfp}
+{Schmidt Sciences}.
+\newblock 2026 interpretability {RFP}.
+\newblock
+  \url{https://schmidtsciences.smapply.io/prog/2026_interpretability_rfp/},
+  2026.
+
+\bibitem[Slack et~al.(2020)Slack, Hilgard, Jia, Singh, and
+  Lakkaraju]{slack2020fooling}
+Dylan Slack, Sophie Hilgard, Emily Jia, Sameer Singh, and Himabindu Lakkaraju.
+\newblock Fooling {LIME} and {SHAP}: Adversarial attacks on post hoc
+  explanation methods.
+\newblock In \emph{Proceedings of the AAAI/ACM Conference on AI, Ethics, and
+  Society (AIES)}, pages 180--186, 2020.
+
+\bibitem[Smith et~al.(1988)Smith, Everhart, Dickson, Knowler, and
+  Johannes]{smith1988pima}
+Jack~W. Smith, James~E. Everhart, William~C. Dickson, William~C. Knowler, and
+  Richard~S. Johannes.
+\newblock Using the {ADAP} learning algorithm to forecast the onset of diabetes
+  mellitus.
+\newblock \emph{Proceedings of the Annual Symposium on Computer Application in
+  Medical Care}, pages 261--265, 1988.
+
+\bibitem[Wolberg et~al.(1995)Wolberg, Street, and
+  Mangasarian]{wolberg1995breast}
+William~H. Wolberg, W.~Nick Street, and Olvi~L. Mangasarian.
+\newblock Breast cancer {Wisconsin} (diagnostic) data set.
+\newblock \emph{UCI Machine Learning Repository}, 1995.
+
+\bibitem[Zhang(2026)]{sparse2026vit}
+Siyu Zhang.
+\newblock Sparse but not simpler: A multi-level interpretability analysis of
+  vision transformers.
+\newblock \emph{arXiv preprint arXiv:2603.15919}, 2026.
+
+\end{thebibliography}

@@ -75,3 +75,17 @@
 | 2026-03-25 13:30 | latex/figures/pareto_frontier.png | Updated LaTeX copy of fixed Pareto plot |
 | 2026-03-25 14:00 | research-notes/drafts/paper-outline_expert_backup.md | Backup of expert-tone paper outline |
 | 2026-03-25 14:00 | research-notes/drafts/paper-outline.md | Rewritten from latex/main.tex: undergraduate tone, 18-figure index |
+| 2026-03-25 14:30 | .vscode/settings.json | LaTeX Workshop: pdflatex+bibtex recipe (avoids latexmk/Perl) |
+| 2026-03-25 15:00 | .vscode/settings.json | Prepend Strawberry Perl to Path for latexmk; default recipe latexmk |
+| 2026-03-25 16:00 | .vscode/settings.json | Full paths to MiKTeX latexmk/pdflatex/bibtex; Path without ${env:Path} (LW does not expand it) |
+| 2026-03-25 17:00 | build-latex.cmd | Wrapper: latexmk latex/main.tex with Perl+MiKTeX on PATH |
+| 2026-03-25 17:00 | .vscode/settings.json | External build: cmd /c build-latex.cmd; search.include latex/main.tex |
+| 2026-03-25 18:00 | latex/main.tex | microtype: expansion=false (fixes pdftex font expansion error) |
+| 2026-03-25 18:00 | latex/main.tex | \\bibliography{niche1_references} (avoid MiKTeX references.bib clash) |
+| 2026-03-25 18:00 | latex/references.bib | Renamed to latex/niche1_references.bib |
+| 2026-03-25 18:00 | build-latex.cmd | BIBINPUTS=latex first; latexmk -g to force rebuild after errors |
+| 2026-03-25 18:00 | .vscode/settings.json | latexmk tool args include -g |
+| 2026-03-25 18:00 | latex/figures/*.png | Recopied 18 plots from experiments/niche1/plots |
+| 2026-03-25 19:00 | latex/main.tex | graphicspath: figures/ + latex/figures/ for cwd root vs latex/ |
+| 2026-03-25 19:00 | .vscode/settings.json | latex-workshop.latex.build.fromWorkspaceFolder: false |
+| 2026-03-25 19:00 | build-latex.cmd | cd to latex/ then latexmk main.tex (aux/pdf under latex/) |

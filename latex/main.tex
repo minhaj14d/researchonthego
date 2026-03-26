@@ -16,9 +16,10 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{enumitem}
-\usepackage{microtype}
+\usepackage[expansion=false]{microtype}
 
-\graphicspath{{figures/}}
+% figures/ works when the compiler cwd is latex/; latex/figures/ when cwd is the repo root
+\graphicspath{{figures/}{latex/figures/}}
 \setlength{\emergencystretch}{2em}
 \hbadness=10000
 \vbadness=10000
@@ -671,6 +672,6 @@ Several directions seem worth exploring:
 % ═════════════════════════════════════════════════════════════════════
 % ── Bibliography ─────────────────────────────────────────────────────
 \bibliographystyle{plainnat}
-\bibliography{references}
+\bibliography{niche1_references}
 
 \end{document}
