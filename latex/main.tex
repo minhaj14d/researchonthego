@@ -19,6 +19,9 @@
 \usepackage{microtype}
 
 \graphicspath{{figures/}}
+\setlength{\emergencystretch}{2em}
+\hbadness=10000
+\vbadness=10000
 
 \hypersetup{
   colorlinks=true,
@@ -287,6 +290,7 @@ transparency actually helps with explanation stability.
 \centering
 \caption{Model configurations.}\label{tab:models}
 \small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 \textbf{Model} & \textbf{Type} & \textbf{SHAP Method} & \textbf{Key Params} \\
@@ -296,7 +300,8 @@ Logistic Reg.                       & Black-box  & LinearExplainer & L2, $C\!=\!
 Decision Tree                       & Interpretable & TreeExplainer & depth~5, leaf~10    \\
 EBM~\cite{nori2019interpretml}      & Interpretable & Native local  & 256 bins, 10 int.   \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 % ═════════════════════════════════════════════════════════════════════
@@ -323,6 +328,7 @@ with Cohen's $d$ ranging from 1.73 to 8.70.
 \caption{Mean Spearman $\rho$ by perturbation type, averaged across
   all four models and perturbation levels.}\label{tab:perturbation}
 \small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Dataset}  & \textbf{Gaussian} & \textbf{Dropout} & \textbf{Label Flip} \\
@@ -331,7 +337,8 @@ Heart Disease      & $0.987 \pm 0.021$ & $0.993 \pm 0.005$ & $0.754 \pm 0.104$ \
 Pima Diabetes      & $0.993 \pm 0.009$ & $0.991 \pm 0.012$ & $0.884 \pm 0.071$ \\
 Breast Cancer      & $0.999 \pm 0.001$ & $0.996 \pm 0.003$ & $0.425 \pm 0.164$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[t]
@@ -616,21 +623,21 @@ Several directions seem worth exploring:
 \appendix
 \section{Additional Figures}\label{app:figures}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{final_summary_panel.png}
 \caption{Summary panel: datasets (columns) vs.\ metrics (rows) under
   label flip for all four models.}\label{fig:summary_panel}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{topk_jaccard.png}
 \caption{Top-$k$ Jaccard similarity degradation under label flip
   for $k=3$ (left) and $k=5$ (right).}\label{fig:jaccard}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{confidence_intervals.png}
 \caption{Bootstrap 95\% confidence intervals for Spearman~$\rho$.
@@ -638,14 +645,14 @@ Several directions seem worth exploring:
   two perturbation types.}\label{fig:ci}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{significance_forest.png}
 \caption{Forest plot of Cohen's $d$ effect sizes. Red bars indicate
   $p < 0.01$.}\label{fig:forest}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{faithfulness_ratio.png}
 \caption{Perturbation faithfulness ratio ($\text{FR}_{k}$). A ratio
@@ -653,7 +660,7 @@ Several directions seem worth exploring:
   label flip, the ratios shrink.}\label{fig:fr}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{feature_correlation_heatmap.png}
 \caption{Per-feature SHAP correlation under label flip. Individual
