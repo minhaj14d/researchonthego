@@ -169,27 +169,52 @@ def plot_native_vs_shap(df):
         native_rho=("native_spearman", "mean"),
     ).reset_index()
 
-    fig, ax = plt.subplots(figsize=(8, 7))
+    SHORT_NAMES = {"heart": "Heart", "diabetes": "Diabetes", "breast_cancer": "Breast"}
+    MARKER_SHAPES = {"heart": "o", "diabetes": "s", "breast_cancer": "D"}
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+
     for _, row in agg.iterrows():
         ax.scatter(
             row["shap_rho"], row["native_rho"],
-            c=MODEL_COLORS[row["model"]], s=120, alpha=0.85,
-            edgecolors="white", linewidths=0.5
+            c=MODEL_COLORS[row["model"]],
+            marker=MARKER_SHAPES[row["dataset"]],
+            s=140, alpha=0.85, edgecolors="white", linewidths=0.8,
+            zorder=3,
         )
-        ax.annotate(
-            f"{DATASET_LABELS[row['dataset']][:5]}",
-            (row["shap_rho"], row["native_rho"]),
-            textcoords="offset points", xytext=(8, 4), fontsize=8
+
+    from adjustText import adjust_text
+    texts = []
+    xs, ys = [], []
+    for _, row in agg.iterrows():
+        xs.append(row["shap_rho"])
+        ys.append(row["native_rho"])
+        lbl = f"{MODEL_LABELS[row['model']]}\n({SHORT_NAMES[row['dataset']]})"
+        t = ax.text(
+            row["shap_rho"], row["native_rho"], lbl,
+            fontsize=7, va="center", ha="left",
         )
+        texts.append(t)
+    try:
+        adjust_text(
+            texts, x=xs, y=ys, ax=ax,
+            force_text=(1.5, 1.5), force_points=(2.0, 2.0),
+            expand=(1.8, 1.8),
+            arrowprops=dict(arrowstyle="-", color="gray", lw=0.5, alpha=0.6),
+        )
+    except Exception:
+        pass
 
     for model in MODEL_LABELS:
         ax.scatter([], [], c=MODEL_COLORS[model], s=80, label=MODEL_LABELS[model])
+    for ds, mk in MARKER_SHAPES.items():
+        ax.scatter([], [], c="gray", marker=mk, s=80, label=SHORT_NAMES[ds])
 
     ax.plot([0, 1], [0, 1], "k--", alpha=0.3, label="SHAP = Native")
     ax.set_xlabel("SHAP-Based Spearman ρ →", fontweight="bold")
     ax.set_ylabel("Native Importance Spearman ρ →", fontweight="bold")
     ax.set_title("SHAP vs Native Feature Importance Stability\n(Under Label Flip)", fontweight="bold")
-    ax.legend(fontsize=9)
+    ax.legend(fontsize=9, loc="lower right", ncol=2)
     ax.grid(True, alpha=0.3)
     ax.set_xlim(-0.1, 1.1)
     ax.set_ylim(-0.1, 1.1)

@@ -67,3 +67,11 @@
 | 2026-03-25 12:00 | latex/figures/*.png | Copied all 18 publication plots into LaTeX figures directory |
 | 2026-03-25 12:30 | latex/main_expert_backup.tex | Backup of expert-tone version before undergrad rewrite |
 | 2026-03-25 12:30 | latex/main.tex | Rewritten in undergraduate applied-math tone: less jargon, more direct |
+| 2026-03-25 13:00 | experiments/niche1/visualize_day4.py | Fixed native_vs_shap: proper labels, adjustText for overlap |
+| 2026-03-25 13:00 | experiments/niche1/plots/native_vs_shap.png | Regenerated with corrected spelling and non-overlapping labels |
+| 2026-03-25 13:00 | latex/figures/native_vs_shap.png | Updated LaTeX copy of fixed plot |
+| 2026-03-25 13:30 | experiments/niche1/run_day5.py | Fixed Pareto plot: color-coded labels with manual offsets and connectors |
+| 2026-03-25 13:30 | experiments/niche1/plots/pareto_frontier.png | Regenerated with non-overlapping labels |
+| 2026-03-25 13:30 | latex/figures/pareto_frontier.png | Updated LaTeX copy of fixed Pareto plot |
+| 2026-03-25 14:00 | research-notes/drafts/paper-outline_expert_backup.md | Backup of expert-tone paper outline |
+| 2026-03-25 14:00 | research-notes/drafts/paper-outline.md | Rewritten from latex/main.tex: undergraduate tone, 18-figure index |

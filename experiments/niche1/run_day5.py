@@ -44,6 +44,8 @@ def is_pareto_optimal(costs):
 
 def generate_pareto_plot(df):
     """Formal Pareto frontier: accuracy vs stability for each dataset."""
+    from adjustText import adjust_text
+
     lf = df[df["perturbation"] == "label_flip"].copy()
     agg = lf.groupby(["dataset", "model", "model_type"]).agg(
         accuracy=("accuracy", "mean"),
@@ -51,7 +53,14 @@ def generate_pareto_plot(df):
         fidelity=("surrogate_fidelity", "mean"),
     ).reset_index()
 
-    fig, axes = plt.subplots(1, 3, figsize=(17, 5.5))
+    LABEL_OFFSETS = {
+        "xgboost":             (-50, 25),
+        "logistic_regression": (15, -30),
+        "decision_tree":       (-55, -25),
+        "ebm":                 (15, 25),
+    }
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 7))
 
     for idx, dataset in enumerate(["heart", "diabetes", "breast_cancer"]):
         ax = axes[idx]
@@ -65,12 +74,19 @@ def generate_pareto_plot(df):
                 c=MODEL_COLORS[row["model"]], s=180, alpha=0.9,
                 edgecolors="black", linewidths=0.8, zorder=5,
             )
-            offset = (8, 6)
             ax.annotate(
                 MODEL_LABELS[row["model"]],
-                (row["accuracy"], row["spearman_rho"]),
-                textcoords="offset points", xytext=offset, fontsize=9,
-                fontweight="bold",
+                xy=(row["accuracy"], row["spearman_rho"]),
+                xytext=LABEL_OFFSETS[row["model"]],
+                textcoords="offset points",
+                fontsize=9, fontweight="bold",
+                color=MODEL_COLORS[row["model"]],
+                arrowprops=dict(arrowstyle="-", color="gray",
+                                lw=0.6, alpha=0.5,
+                                shrinkA=0, shrinkB=8),
+                ha="center", va="center",
+                bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                          ec="none", alpha=0.8),
             )
 
         pareto_pts = points[pareto_mask]
