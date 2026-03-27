@@ -17,6 +17,11 @@
 \usepackage{algorithmic}
 \usepackage{enumitem}
 \usepackage[expansion=false]{microtype}
+\usepackage{orcidlink}
+\usepackage{authblk}
+\renewcommand\Affilfont{\small}
+\setlength{\affilsep}{0.3em}
+
 
 % figures/ works when the compiler cwd is latex/; latex/figures/ when cwd is the repo root
 \graphicspath{{figures/}{latex/figures/}}
@@ -32,7 +37,7 @@
 }
 
 % ── Compact spacing ──────────────────────────────────────────────────
-\setlength{\parskip}{0.4em}
+\setlength{\parskip}{0.2em}
 \setlength{\abovecaptionskip}{6pt}
 \setlength{\belowcaptionskip}{2pt}
 
@@ -43,12 +48,8 @@
   Under Distributional Shift%
 }
 
-\author{
-  Anonymous Author(s)\\
-  \textit{Department of Applied Mathematics}\\
-  \texttt{anonymous@university.edu}
-}
-
+\author{Minhajul Abedin~\orcidlink{0009-0006-5654-632X}}
+\affil{Department of Applied Mathematics, Noakhali Science and Technology University, Noakhali-3814, Bangladesh \\ \small minhajul0616@student.nstu.edu.bd}
 \date{}
 
 % ═════════════════════════════════════════════════════════════════════
@@ -171,9 +172,7 @@ but stability under perturbation was not part of the evaluation. A
 study of sparse Vision Transformers~\cite{sparse2026vit} found that
 making a model structurally simpler does not necessarily make its
 explanations more stable---sparsity ``redistributes rather than
-isolates computation.'' The Schmidt Sciences 2026
-RFP~\cite{schmidt2026rfp} specifically asks for explanation methods
-that work ``beyond academic benchmarks.'' All of this suggests that
+isolates computation.'' All of this suggests that
 there is room for a study that looks at explanation stability in a
 more structured way: across different kinds of perturbations,
 different model types, and different notions of what ``stable''
@@ -618,56 +617,6 @@ Several directions seem worth exploring:
   \item Investigating whether training objectives can be modified
     to encourage more stable explanations.
 \end{itemize}
-
-% ═════════════════════════════════════════════════════════════════════
-% ── Appendix ─────────────────────────────────────────────────────────
-\appendix
-\section{Additional Figures}\label{app:figures}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{final_summary_panel.png}
-\caption{Summary panel: datasets (columns) vs.\ metrics (rows) under
-  label flip for all four models.}\label{fig:summary_panel}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{topk_jaccard.png}
-\caption{Top-$k$ Jaccard similarity degradation under label flip
-  for $k=3$ (left) and $k=5$ (right).}\label{fig:jaccard}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{confidence_intervals.png}
-\caption{Bootstrap 95\% confidence intervals for Spearman~$\rho$.
-  The label flip intervals are clearly separated from the other
-  two perturbation types.}\label{fig:ci}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{significance_forest.png}
-\caption{Forest plot of Cohen's $d$ effect sizes. Red bars indicate
-  $p < 0.01$.}\label{fig:forest}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{faithfulness_ratio.png}
-\caption{Perturbation faithfulness ratio ($\text{FR}_{k}$). A ratio
-  well above 1 means SHAP is identifying the right features. Under
-  label flip, the ratios shrink.}\label{fig:fr}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{feature_correlation_heatmap.png}
-\caption{Per-feature SHAP correlation under label flip. Individual
-  features keep high sample-level correlation, but the aggregate
-  ranking across features shifts.}\label{fig:feat_corr}
-\end{figure}
 
 % ═════════════════════════════════════════════════════════════════════
 % ── Bibliography ─────────────────────────────────────────────────────
